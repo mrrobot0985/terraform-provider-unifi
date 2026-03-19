@@ -364,6 +364,14 @@ func ResourcePortProfile() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"qos_profile_mode": {
+				Description: "QoS profile mode. Set to 'custom' to avoid Pro AV presets (default in UniFi 8.4+). " +
+					"Other values enable specific Pro AV modes.",
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "custom",
+				ValidateFunc: validation.StringInSlice([]string{"custom", "unifi_play", "aes67_audio", "crestron_audio_video", "dante_audio", "ndi_aes67_audio", "ndi_dante_audio", "qsys_audio_video", "qsys_video_dante_audio", "sdvoe_aes67_audio", "sdvoe_dante_audio", "shure_audio"}, false),
+			},
 		},
 	}
 }
@@ -437,6 +445,9 @@ func resourcePortProfileGetResourceData(d *schema.ResourceData) (*unifi.PortProf
 		StpPortMode:                  d.Get("stp_port_mode").(bool),
 		TaggedVLANMgmt:               d.Get("tagged_vlan_mgmt").(string),
 		VoiceNetworkID:               d.Get("voice_networkconf_id").(string),
+		QOSProfile: unifi.PortProfileQOSProfile{
+			QOSProfileMode: d.Get("qos_profile_mode").(string),
+		},
 	}, nil
 }
 
@@ -477,6 +488,7 @@ func resourcePortProfileSetResourceData(resp *unifi.PortProfile, d *schema.Resou
 	d.Set("stp_port_mode", resp.StpPortMode)
 	d.Set("tagged_vlan_mgmt", resp.TaggedVLANMgmt)
 	d.Set("voice_networkconf_id", resp.VoiceNetworkID)
+	d.Set("qos_profile_mode", resp.QOSProfile.QOSProfileMode)
 
 	return nil
 }
