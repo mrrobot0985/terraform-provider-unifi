@@ -1,4 +1,6 @@
 version: 2
+project_name: terraform-provider-unifi
+
 builds:
   - env:
       - CGO_ENABLED=0
@@ -6,37 +8,28 @@ builds:
     flags:
       - -trimpath
     ldflags:
-      - "-s -w -X main.version={{.Version}} -X main.commit={{.Commit}}"
+      - "-s -w -X main.version={{.Version}}"
     goos:
-      - freebsd
-      - windows
       - linux
       - darwin
+      - windows
     goarch:
       - amd64
-      - "386"
-      - arm
       - arm64
-    ignore:
-      - goos: darwin
-        goarch: "386"
-    binary: "{{ .ProjectName }}_v{{ .Version }}"
+    binary: terraform-provider-unifi
+    main: ./main.go
+
 archives:
   - format: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
 checksum:
-  name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
+  name_template: SHA256SUMS
   algorithm: sha256
+
 signs:
   - artifacts: checksum
-    args:
-      - "--batch"
-      - "--local-user"
-      - "{{ .Env.GPG_FINGERPRINT }}"
-      - "--output"
-      - "${signature}"
-      - "--detach-sign"
-      - "${artifact}"
+    cmd: 'gpg --armor --detach-sign --output ${signature} ${file}'
+
 changelog:
   disable: true
-  use: github-native
