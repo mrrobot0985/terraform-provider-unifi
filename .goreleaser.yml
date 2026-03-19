@@ -27,9 +27,9 @@ checksum:
   name_template: SHA256SUMS
   algorithm: sha256
 
-signs:
-  - artifacts: checksum
-    cmd: 'gpg --armor --detach-sign --output ${signature} ${file}'
+# signs:
+#   - artifacts: checksum
+#     cmd: 'gpg --armor --detach-sign --output ${signature} ${file}'
 
 changelog:
   disable: true
